@@ -2,14 +2,74 @@
 
 {% block content %}
 <section class="page-header">
-    <h1>{{ section|capfirst }}</h1>
-    <p>Раздел находится в разработке. Здесь будут аналитика и таблицы.</p>
+    <div class="header-row">
+        <div>
+            <h1>{{ title }}</h1>
+            <p>{{ subtitle }}</p>
+        </div>
+        <div class="header-chip">{{ period }}</div>
+    </div>
 </section>
 
-<div class="panel">
-    <div class="empty-state">
-        <div class="empty-title">Данные появятся после интеграции</div>
-        <p class="muted">Подключите источники, чтобы видеть аналитику, как на макетах.</p>
+<div class="card-grid">
+    {% for card in kpis %}
+        <div class="card">
+            <div class="card-title">{{ card.title }}</div>
+            <div class="card-value">{{ card.value }}</div>
+            {% if card.note %}
+                <div class="card-note">{{ card.note }}</div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+{% if list_title %}
+    <div class="list-panel">
+        <h2>{{ list_title }}</h2>
+        {% for item in list_items %}
+            <div class="list-item">
+                <div>
+                    <div class="list-item-title">{{ item.title }}</div>
+                    <div class="list-item-subtitle">{{ item.subtitle }}</div>
+                </div>
+                <div class="list-item-value">{{ item.value }}</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="split">
+    <div class="panel">
+        <h2>{{ table_title }}</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                {% for head in table_headers %}
+                    <th>{{ head }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in table_rows %}
+                <tr>
+                    {% for cell in row %}
+                        <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="panel">
+        <h2>{{ insight_title }}</h2>
+        <div class="insights">
+            {% for insight in insights %}
+                <div class="insight">
+                    <strong>{{ insight.title }}</strong>
+                    <span>{{ insight.value }}</span>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock %}
