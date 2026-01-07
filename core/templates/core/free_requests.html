@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<section class="page-header">
+    <h1>Свободные заявки</h1>
+    <p>Заявки без закрепления. Можно взять в работу.</p>
+</section>
+
+<div class="panel">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Клиент</th>
+            <th>Телефон</th>
+            <th>Адрес</th>
+            <th>Дата</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for request in requests %}
+            <tr>
+                <td>{{ request.client_name }}</td>
+                <td>{{ request.phone }}</td>
+                <td>{{ request.address }}</td>
+                <td>{{ request.scheduled_for|date:"d.m.Y H:i" }}</td>
+                <td>
+                    {% if type == 'installation' %}
+                        <form action="/requests/installations/{{ request.id }}/claim/" method="post">
+                            {% csrf_token %}
+                            <button class="link" type="submit">Взять установку</button>
+                        </form>
+                    {% else %}
+                        <form action="/requests/deliveries/{{ request.id }}/claim/" method="post">
+                            {% csrf_token %}
+                            <button class="link" type="submit">Взять доставку</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5" class="muted">Свободных заявок пока нет.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

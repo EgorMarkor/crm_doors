@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<section class="page-header">
+    <h1>{{ section|capfirst }}</h1>
+    <p>Раздел находится в разработке. Здесь будут аналитика и таблицы.</p>
+</section>
+
+<div class="panel">
+    <div class="empty-state">
+        <div class="empty-title">Данные появятся после интеграции</div>
+        <p class="muted">Подключите источники, чтобы видеть аналитику, как на макетах.</p>
+    </div>
+</div>
+{% endblock %}
