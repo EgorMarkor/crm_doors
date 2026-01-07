@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<section class="page-header">
+    <h1>Дашборд менеджера</h1>
+    <p>Здесь видно качество лидов, продажи и эффективность обработки.</p>
+</section>
+
+<div class="card-grid">
+    <div class="card">
+        <div class="card-title">Новые лиды</div>
+        <div class="card-value">27</div>
+        <div class="card-note">За 30 дней</div>
+    </div>
+    <div class="card">
+        <div class="card-title">Продажи</div>
+        <div class="card-value">724 500 ₽</div>
+        <div class="card-note">4 заказа</div>
+    </div>
+    <div class="card">
+        <div class="card-title">Средний чек</div>
+        <div class="card-value">180 000 ₽</div>
+        <div class="card-note">За месяц</div>
+    </div>
+    <div class="card">
+        <div class="card-title">Активные сделки</div>
+        <div class="card-value">9</div>
+        <div class="card-note">В работе</div>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Лиды по источникам</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Источник</th>
+            <th>Тип</th>
+            <th>Лиды</th>
+            <th>Конверсия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Яндекс Директ</td>
+            <td><span class="badge">Таргет</span></td>
+            <td>7</td>
+            <td class="positive">42.9%</td>
+        </tr>
+        <tr>
+            <td>QR-стенд ТЦ Мега</td>
+            <td><span class="badge dark">QR</span></td>
+            <td>7</td>
+            <td class="positive">57.1%</td>
+        </tr>
+        <tr>
+            <td>QR-стенд Леруа Мерлен</td>
+            <td><span class="badge dark">QR</span></td>
+            <td>6</td>
+            <td class="positive">33.3%</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

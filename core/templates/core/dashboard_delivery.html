@@ -1,0 +1,87 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<section class="page-header">
+    <h1>Дашборд доставщика</h1>
+    <p>Самые ближайшие заявки на доставку и ваши активные маршруты.</p>
+</section>
+
+<div class="card-grid">
+    <div class="card">
+        <div class="card-title">Доставки на сегодня</div>
+        <div class="card-value">{{ my_deliveries|length }}</div>
+        <div class="card-note">Мои доставки</div>
+    </div>
+    <div class="card">
+        <div class="card-title">Свободные доставки</div>
+        <div class="card-value">{{ upcoming_deliveries|length }}</div>
+        <div class="card-note">Доступные для взятия</div>
+    </div>
+</div>
+
+<div class="split">
+    <div class="panel">
+        <h2>Мои ближайшие доставки</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Клиент</th>
+                <th>Телефон</th>
+                <th>Адрес</th>
+                <th>Дата</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for request in my_deliveries %}
+                <tr>
+                    <td>{{ request.client_name }}</td>
+                    <td>{{ request.phone }}</td>
+                    <td>{{ request.address }}</td>
+                    <td>{{ request.scheduled_for|date:"d.m.Y H:i" }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="muted">Нет назначенных доставок.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="panel">
+        <h2>Ближайшие свободные заявки</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Клиент</th>
+                <th>Адрес</th>
+                <th>Дата</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for request in upcoming_deliveries %}
+                <tr>
+                    <td>{{ request.client_name }}</td>
+                    <td>{{ request.address }}</td>
+                    <td>{{ request.scheduled_for|date:"d.m.Y H:i" }}</td>
+                    <td>
+                        {% if not request.courier %}
+                            <form action="/requests/deliveries/{{ request.id }}/claim/" method="post">
+                                {% csrf_token %}
+                                <button class="link" type="submit">Взять заявку</button>
+                            </form>
+                        {% else %}
+                            <span class="muted">Назначено</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="muted">Свободных доставок нет.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

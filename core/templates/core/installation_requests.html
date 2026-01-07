@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<section class="page-header">
+    <h1>Заявки на установки</h1>
+    <p>Список заявок, назначенных вам или вашим менеджерам.</p>
+</section>
+
+<div class="panel">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Клиент</th>
+            <th>Телефон</th>
+            <th>Адрес</th>
+            <th>Дата</th>
+            <th>Менеджер</th>
+            <th>Статус</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for request in requests %}
+            <tr>
+                <td>{{ request.client_name }}</td>
+                <td>{{ request.phone }}</td>
+                <td>{{ request.address }}</td>
+                <td>{{ request.scheduled_for|date:"d.m.Y H:i" }}</td>
+                <td>{{ request.manager|default:"—" }}</td>
+                <td>{{ request.status }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6" class="muted">Заявок пока нет.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

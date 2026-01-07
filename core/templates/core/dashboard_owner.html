@@ -1,0 +1,84 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<section class="page-header">
+    <h1>Дашборд владельца</h1>
+    <p>Полное отслеживание бизнеса: ключевые метрики, заявки и финансы.</p>
+</section>
+
+<div class="card-grid">
+    <div class="card">
+        <div class="card-title">Выручка</div>
+        <div class="card-value">316 000 ₽</div>
+        <div class="card-note">За 60 дней</div>
+    </div>
+    <div class="card">
+        <div class="card-title">Валовая прибыль</div>
+        <div class="card-value positive">154 200 ₽</div>
+        <div class="card-note">Маржа 48.8%</div>
+    </div>
+    <div class="card">
+        <div class="card-title">Активные заявки</div>
+        <div class="card-value">24</div>
+        <div class="card-note">В производстве</div>
+    </div>
+    <div class="card">
+        <div class="card-title">Конверсия лидов</div>
+        <div class="card-value positive">42.9%</div>
+        <div class="card-note">По всем каналам</div>
+    </div>
+</div>
+
+<div class="split">
+    <div class="panel">
+        <h2>Ближайшие установки</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Клиент</th>
+                <th>Дата и время</th>
+                <th>Адрес</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for request in upcoming_installations %}
+                <tr>
+                    <td>{{ request.client_name }}</td>
+                    <td>{{ request.scheduled_for|date:"d.m.Y H:i" }}</td>
+                    <td>{{ request.address }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" class="muted">Пока нет ближайших установок.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="panel">
+        <h2>Ближайшие доставки</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Клиент</th>
+                <th>Дата и время</th>
+                <th>Адрес</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for request in upcoming_deliveries %}
+                <tr>
+                    <td>{{ request.client_name }}</td>
+                    <td>{{ request.scheduled_for|date:"d.m.Y H:i" }}</td>
+                    <td>{{ request.address }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" class="muted">Пока нет ближайших доставок.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
