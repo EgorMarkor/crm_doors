@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="/static/core/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
 </head>
 <body>
 <div class="layout">
@@ -16,21 +17,134 @@
             <div class="brand-subtitle">Аналитика бизнеса</div>
         </div>
         <nav class="menu">
-            <a class="menu-item" href="/">Дашборд</a>
-            <a class="menu-item" href="/section/leads/">Лиды</a>
-            <a class="menu-item" href="/section/managers/">Менеджеры</a>
-            <a class="menu-item" href="/section/sales/">Продажи</a>
-            <a class="menu-item" href="/section/site/">Сайт и ИИ</a>
-            <a class="menu-item" href="/section/production/">Производство и 1С</a>
-            <a class="menu-item" href="/section/finance/">Финансы</a>
+            <a class="menu-item{% if request.path == '/' %} is-active{% endif %}" href="/">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 11.5L12 4l9 7.5v8.5a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"
+                              fill="none" stroke="currentColor" stroke-width="1.6"/>
+                    </svg>
+                </span>
+                <span>Дашборд</span>
+            </a>
+            <a class="menu-item{% if request.path == '/section/leads/' %} is-active{% endif %}"
+               href="/section/leads/">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 18V6m6 12V9m6 9v-4m4 4v-7" fill="none" stroke="currentColor"
+                              stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span>Лиды</span>
+            </a>
+            <a class="menu-item{% if request.path == '/section/managers/' %} is-active{% endif %}"
+               href="/section/managers/">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M16 14a4 4 0 1 0-8 0m12 6a6 6 0 0 0-12 0"
+                              fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span>Менеджеры</span>
+            </a>
+            <a class="menu-item{% if request.path == '/section/sales/' %} is-active{% endif %}"
+               href="/section/sales/">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 14l6-6 4 4 6-6" fill="none" stroke="currentColor" stroke-width="1.6"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14 6h6v6" fill="none" stroke="currentColor" stroke-width="1.6"
+                              stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span>Продажи</span>
+            </a>
+            <a class="menu-item{% if request.path == '/section/site/' %} is-active{% endif %}"
+               href="/section/site/">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                        <path d="M4 12h16M12 4a12 12 0 0 1 0 16M12 4a12 12 0 0 0 0 16"
+                              fill="none" stroke="currentColor" stroke-width="1.4"/>
+                    </svg>
+                </span>
+                <span>Сайт и ИИ</span>
+            </a>
+            <a class="menu-item{% if request.path == '/section/production/' %} is-active{% endif %}"
+               href="/section/production/">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 8l8-4 8 4-8 4z" fill="none" stroke="currentColor" stroke-width="1.6"
+                              stroke-linejoin="round"/>
+                        <path d="M4 8v8l8 4 8-4V8" fill="none" stroke="currentColor" stroke-width="1.6"
+                              stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span>Производство и 1С</span>
+            </a>
+            <a class="menu-item{% if request.path == '/section/finance/' %} is-active{% endif %}"
+               href="/section/finance/">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 8h14M5 12h14M5 16h8" fill="none" stroke="currentColor" stroke-width="1.6"
+                              stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span>Финансы</span>
+            </a>
             <div class="menu-divider"></div>
-            <a class="menu-item" href="/requests/installations/">Заявки на установки</a>
-            <a class="menu-item" href="/requests/deliveries/">Заявки на доставку</a>
-            <a class="menu-item" href="/requests/installations/free/">Свободные установки</a>
-            <a class="menu-item" href="/requests/deliveries/free/">Свободные доставки</a>
+            <a class="menu-item{% if request.path == '/requests/installations/' %} is-active{% endif %}"
+               href="/requests/installations/">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 7h16M6 11h12M8 15h8" fill="none" stroke="currentColor" stroke-width="1.6"
+                              stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span>Заявки на установки</span>
+            </a>
+            <a class="menu-item{% if request.path == '/requests/deliveries/' %} is-active{% endif %}"
+               href="/requests/deliveries/">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 16h16M6 16V8h8v8m2 0V10h4v6" fill="none" stroke="currentColor"
+                              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span>Заявки на доставку</span>
+            </a>
+            <a class="menu-item{% if request.path == '/requests/installations/free/' %} is-active{% endif %}"
+               href="/requests/installations/free/">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 6v12M6 12h12" fill="none" stroke="currentColor" stroke-width="1.6"
+                              stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span>Свободные установки</span>
+            </a>
+            <a class="menu-item{% if request.path == '/requests/deliveries/free/' %} is-active{% endif %}"
+               href="/requests/deliveries/free/">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 6v12M6 12h12" fill="none" stroke="currentColor" stroke-width="1.6"
+                              stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span>Свободные доставки</span>
+            </a>
             <form action="/logout/" method="post" class="logout">
                 {% csrf_token %}
-                <button type="submit">Выйти</button>
+                <button type="submit" class="menu-item logout-button">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M15 7l4 5-4 5M9 12h10" fill="none" stroke="currentColor"
+                                  stroke-width="1.6" stroke-linecap="round"/>
+                            <path d="M9 5H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h4"
+                                  fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                        </svg>
+                    </span>
+                    <span>Выйти</span>
+                </button>
             </form>
         </nav>
     </aside>

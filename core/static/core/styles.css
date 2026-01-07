@@ -1,11 +1,12 @@
 :root {
-    --bg: #f5f6f8;
+    --bg: #f4f6fb;
     --card: #ffffff;
-    --text: #1b1c1f;
-    --muted: #8a9099;
+    --text: #141518;
+    --muted: #6b7280;
     --accent: #111214;
     --positive: #0f9d58;
-    --border: #e5e7eb;
+    --border: #e5e7ef;
+    --shadow: 0 16px 40px rgba(17, 18, 20, 0.08);
 }
 
 * {
@@ -14,7 +15,7 @@
 
 body {
     margin: 0;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Manrope', sans-serif;
     color: var(--text);
     background: var(--bg);
 }
@@ -25,59 +26,82 @@ body {
 }
 
 .sidebar {
-    width: 260px;
+    width: 280px;
     background: #fff;
     border-right: 1px solid var(--border);
     padding: 32px 24px;
 }
 
 .brand-title {
-    font-size: 22px;
-    font-weight: 700;
+    font-size: 24px;
+    font-weight: 800;
 }
 
 .brand-subtitle {
     color: var(--muted);
     margin-top: 4px;
+    font-size: 14px;
 }
 
 .menu {
     margin-top: 32px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .menu-item {
     text-decoration: none;
     color: var(--text);
-    padding: 10px 14px;
-    border-radius: 12px;
-    display: block;
-    transition: background 0.2s;
+    padding: 12px 14px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
 }
 
 .menu-item:hover {
-    background: var(--bg);
+    background: #f0f2f7;
+}
+
+.menu-item.is-active {
+    background: var(--accent);
+    color: #fff;
+}
+
+.menu-icon {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-icon svg {
+    width: 20px;
+    height: 20px;
 }
 
 .menu-divider {
     border-top: 1px solid var(--border);
-    margin: 8px 0;
+    margin: 10px 0;
 }
 
 .logout button {
     width: 100%;
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: #fff;
+    border: none;
+    background: transparent;
     cursor: pointer;
+    font: inherit;
+    text-align: left;
+    padding: 0;
 }
 
 .content {
     flex: 1;
-    padding: 40px;
+    padding: 40px 48px;
 }
 
 .page-header h1 {
@@ -100,8 +124,9 @@ body {
 .card {
     background: var(--card);
     padding: 20px;
-    border-radius: 16px;
+    border-radius: 18px;
     border: 1px solid var(--border);
+    box-shadow: 0 8px 24px rgba(17, 18, 20, 0.04);
 }
 
 .card-title {
@@ -133,10 +158,11 @@ body {
 
 .panel {
     background: var(--card);
-    border-radius: 18px;
+    border-radius: 20px;
     border: 1px solid var(--border);
     padding: 20px;
     margin-top: 24px;
+    box-shadow: 0 12px 32px rgba(17, 18, 20, 0.05);
 }
 
 .panel h2 {
@@ -196,7 +222,7 @@ body {
 .auth-card {
     background: var(--card);
     padding: 32px;
-    border-radius: 16px;
+    border-radius: 18px;
     border: 1px solid var(--border);
     width: 360px;
 }
@@ -238,4 +264,93 @@ body {
 
 .empty-title {
     font-weight: 600;
+}
+
+.header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.header-chip {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.list-panel {
+    margin-top: 24px;
+    background: var(--card);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 18px;
+    box-shadow: 0 12px 32px rgba(17, 18, 20, 0.05);
+}
+
+.list-panel h2 {
+    margin: 0 0 16px;
+}
+
+.list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: #fff;
+    margin-bottom: 12px;
+}
+
+.list-item:last-child {
+    margin-bottom: 0;
+}
+
+.list-item-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.list-item-subtitle {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.list-item-value {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.insights {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.insight {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: var(--bg);
+}
+
+.insight span {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.menu-item.logout-button {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 10px 14px;
+}
+
+.menu-item.logout-button:hover {
+    background: #f7f7fa;
 }
