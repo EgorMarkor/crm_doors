@@ -32,53 +32,57 @@
 <div class="split">
     <div class="panel">
         <h2>Ближайшие установки</h2>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Клиент</th>
-                <th>Дата и время</th>
-                <th>Адрес</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for request in upcoming_installations %}
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
                 <tr>
-                    <td>{{ request.client_name }}</td>
-                    <td>{{ request.scheduled_for|date:"d.m.Y H:i" }}</td>
-                    <td>{{ request.address }}</td>
+                    <th>Клиент</th>
+                    <th>Дата и время</th>
+                    <th>Адрес</th>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="3" class="muted">Пока нет ближайших установок.</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for request in upcoming_installations %}
+                    <tr>
+                        <td>{{ request.client_name }}</td>
+                        <td>{{ request.scheduled_for|date:"d.m.Y H:i" }}</td>
+                        <td>{{ request.address }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="muted">Пока нет ближайших установок.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="panel">
         <h2>Ближайшие доставки</h2>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Клиент</th>
-                <th>Дата и время</th>
-                <th>Адрес</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for request in upcoming_deliveries %}
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
                 <tr>
-                    <td>{{ request.client_name }}</td>
-                    <td>{{ request.scheduled_for|date:"d.m.Y H:i" }}</td>
-                    <td>{{ request.address }}</td>
+                    <th>Клиент</th>
+                    <th>Дата и время</th>
+                    <th>Адрес</th>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="3" class="muted">Пока нет ближайших доставок.</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for request in upcoming_deliveries %}
+                    <tr>
+                        <td>{{ request.client_name }}</td>
+                        <td>{{ request.scheduled_for|date:"d.m.Y H:i" }}</td>
+                        <td>{{ request.address }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="muted">Пока нет ближайших доставок.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}
