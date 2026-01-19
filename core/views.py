@@ -1,11 +1,27 @@
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from core.models import DeliveryRequest, InstallationRequest, User
+
+
+def _parse_datetime(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    parsed = datetime.fromisoformat(value)
+    if timezone.is_naive(parsed):
+        return timezone.make_aware(parsed, timezone.get_current_timezone())
+    return parsed
+
+
+def _parse_date(value: str | None) -> date | None:
+    if not value:
+        return None
+    return datetime.fromisoformat(value).date()
 
 
 @login_required
@@ -49,12 +65,50 @@ def installation_requests(request: HttpRequest) -> HttpResponse:
     if user.is_manager():
         qs = InstallationRequest.objects.filter(manager=user)
     elif user.is_installer():
-        qs = InstallationRequest.objects.filter(installer=user)
+        qs = InstallationRequest.objects.filter(Q(installer=user) | Q(installer__isnull=True))
     elif user.is_owner():
         qs = InstallationRequest.objects.all()
     else:
         return redirect('dashboard')
-    return render(request, 'core/installation_requests.html', {'requests': qs})
+    filters = {
+        'query': request.GET.get('query', '').strip(),
+        'status': request.GET.get('status', '').strip(),
+        'manager': request.GET.get('manager', '').strip(),
+        'assignment': request.GET.get('assignment', '').strip(),
+        'date_from': request.GET.get('date_from', '').strip(),
+        'date_to': request.GET.get('date_to', '').strip(),
+    }
+    if filters['query']:
+        qs = qs.filter(
+            Q(client_name__icontains=filters['query'])
+            | Q(phone__icontains=filters['query'])
+            | Q(address__icontains=filters['query'])
+        )
+    if filters['status']:
+        qs = qs.filter(status=filters['status'])
+    if filters['manager'] and user.is_owner():
+        qs = qs.filter(manager_id=filters['manager'])
+    if filters['assignment'] == 'free':
+        qs = qs.filter(installer__isnull=True)
+    elif filters['assignment'] == 'mine' and user.is_installer():
+        qs = qs.filter(installer=user)
+    elif filters['assignment'] == 'assigned':
+        qs = qs.filter(installer__isnull=False)
+    date_from = _parse_date(filters['date_from'])
+    if date_from:
+        qs = qs.filter(scheduled_for__date__gte=date_from)
+    date_to = _parse_date(filters['date_to'])
+    if date_to:
+        qs = qs.filter(scheduled_for__date__lte=date_to)
+    statuses = list(InstallationRequest.objects.order_by().values_list('status', flat=True).distinct())
+    managers = User.objects.filter(role=User.Roles.MANAGER).order_by('first_name', 'last_name', 'username')
+    context = {
+        'requests': qs,
+        'filters': filters,
+        'statuses': statuses,
+        'managers': managers,
+    }
+    return render(request, 'core/installation_requests.html', context)
 
 
 @login_required
@@ -63,12 +117,50 @@ def delivery_requests(request: HttpRequest) -> HttpResponse:
     if user.is_manager():
         qs = DeliveryRequest.objects.filter(manager=user)
     elif user.is_delivery():
-        qs = DeliveryRequest.objects.filter(courier=user)
+        qs = DeliveryRequest.objects.filter(Q(courier=user) | Q(courier__isnull=True))
     elif user.is_owner():
         qs = DeliveryRequest.objects.all()
     else:
         return redirect('dashboard')
-    return render(request, 'core/delivery_requests.html', {'requests': qs})
+    filters = {
+        'query': request.GET.get('query', '').strip(),
+        'status': request.GET.get('status', '').strip(),
+        'manager': request.GET.get('manager', '').strip(),
+        'assignment': request.GET.get('assignment', '').strip(),
+        'date_from': request.GET.get('date_from', '').strip(),
+        'date_to': request.GET.get('date_to', '').strip(),
+    }
+    if filters['query']:
+        qs = qs.filter(
+            Q(client_name__icontains=filters['query'])
+            | Q(phone__icontains=filters['query'])
+            | Q(address__icontains=filters['query'])
+        )
+    if filters['status']:
+        qs = qs.filter(status=filters['status'])
+    if filters['manager'] and user.is_owner():
+        qs = qs.filter(manager_id=filters['manager'])
+    if filters['assignment'] == 'free':
+        qs = qs.filter(courier__isnull=True)
+    elif filters['assignment'] == 'mine' and user.is_delivery():
+        qs = qs.filter(courier=user)
+    elif filters['assignment'] == 'assigned':
+        qs = qs.filter(courier__isnull=False)
+    date_from = _parse_date(filters['date_from'])
+    if date_from:
+        qs = qs.filter(scheduled_for__date__gte=date_from)
+    date_to = _parse_date(filters['date_to'])
+    if date_to:
+        qs = qs.filter(scheduled_for__date__lte=date_to)
+    statuses = list(DeliveryRequest.objects.order_by().values_list('status', flat=True).distinct())
+    managers = User.objects.filter(role=User.Roles.MANAGER).order_by('first_name', 'last_name', 'username')
+    context = {
+        'requests': qs,
+        'filters': filters,
+        'statuses': statuses,
+        'managers': managers,
+    }
+    return render(request, 'core/delivery_requests.html', context)
 
 
 @login_required
@@ -110,6 +202,66 @@ def claim_delivery(request: HttpRequest, request_id: int) -> HttpResponse:
     delivery_request.courier = user
     delivery_request.status = 'Назначен доставщик'
     delivery_request.save()
+    return redirect('delivery_requests')
+
+
+@login_required
+def create_installation_request(request: HttpRequest) -> HttpResponse:
+    user: User = request.user
+    if not (user.is_owner() or user.is_manager()):
+        return redirect('installation_requests')
+    if request.method != 'POST':
+        return redirect('installation_requests')
+    client_name = request.POST.get('client_name', '').strip()
+    phone = request.POST.get('phone', '').strip()
+    address = request.POST.get('address', '').strip()
+    scheduled_for = _parse_datetime(request.POST.get('scheduled_for'))
+    if not (client_name and phone and address and scheduled_for):
+        return redirect('installation_requests')
+    status = request.POST.get('status', '').strip() or 'В ожидании установки'
+    manager = user if user.is_manager() else None
+    if user.is_owner():
+        manager_id = request.POST.get('manager')
+        if manager_id:
+            manager = User.objects.filter(role=User.Roles.MANAGER, pk=manager_id).first()
+    InstallationRequest.objects.create(
+        client_name=client_name,
+        phone=phone,
+        address=address,
+        scheduled_for=scheduled_for,
+        status=status,
+        manager=manager,
+    )
+    return redirect('installation_requests')
+
+
+@login_required
+def create_delivery_request(request: HttpRequest) -> HttpResponse:
+    user: User = request.user
+    if not (user.is_owner() or user.is_manager()):
+        return redirect('delivery_requests')
+    if request.method != 'POST':
+        return redirect('delivery_requests')
+    client_name = request.POST.get('client_name', '').strip()
+    phone = request.POST.get('phone', '').strip()
+    address = request.POST.get('address', '').strip()
+    scheduled_for = _parse_datetime(request.POST.get('scheduled_for'))
+    if not (client_name and phone and address and scheduled_for):
+        return redirect('delivery_requests')
+    status = request.POST.get('status', '').strip() or 'В ожидании доставки'
+    manager = user if user.is_manager() else None
+    if user.is_owner():
+        manager_id = request.POST.get('manager')
+        if manager_id:
+            manager = User.objects.filter(role=User.Roles.MANAGER, pk=manager_id).first()
+    DeliveryRequest.objects.create(
+        client_name=client_name,
+        phone=phone,
+        address=address,
+        scheduled_for=scheduled_for,
+        status=status,
+        manager=manager,
+    )
     return redirect('delivery_requests')
 
 

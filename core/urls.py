@@ -13,5 +13,7 @@ urlpatterns = [
     path('requests/deliveries/free/', views.free_delivery_requests, name='free_delivery_requests'),
     path('requests/installations/<int:request_id>/claim/', views.claim_installation, name='claim_installation'),
     path('requests/deliveries/<int:request_id>/claim/', views.claim_delivery, name='claim_delivery'),
+    path('requests/installations/create/', views.create_installation_request, name='create_installation_request'),
+    path('requests/deliveries/create/', views.create_delivery_request, name='create_delivery_request'),
     path('section/<slug:section>/', views.placeholder_section, name='placeholder_section'),
 ]
