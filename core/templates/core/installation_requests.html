@@ -7,6 +7,76 @@
 </section>
 
 <div class="panel">
+    <div class="panel-header">
+        <form class="filters" method="get">
+            <div class="filters-row">
+                <label for="installation-query">Поиск</label>
+                <input id="installation-query" type="text" name="query" placeholder="Клиент, телефон или адрес"
+                       value="{{ filters.query }}">
+            </div>
+            <div class="filters-row">
+                <label for="installation-status">Статус</label>
+                <select id="installation-status" name="status">
+                    <option value="">Все</option>
+                    {% for status in statuses %}
+                        <option value="{{ status }}" {% if filters.status == status %}selected{% endif %}>
+                            {{ status }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if request.user.is_owner %}
+                <div class="filters-row">
+                    <label for="installation-manager">Менеджер</label>
+                    <select id="installation-manager" name="manager">
+                        <option value="">Все</option>
+                        {% for manager in managers %}
+                            <option value="{{ manager.id }}" {% if filters.manager == manager.id|stringformat:"s" %}
+                                    selected{% endif %}>
+                                {{ manager.get_full_name|default:manager.username }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+            {% if request.user.is_owner or request.user.is_installer %}
+                <div class="filters-row">
+                    <label for="installation-assignment">Назначение</label>
+                    <select id="installation-assignment" name="assignment">
+                        <option value="">Все</option>
+                        {% if request.user.is_installer %}
+                            <option value="mine" {% if filters.assignment == 'mine' %}selected{% endif %}>
+                                Мои заявки
+                            </option>
+                        {% endif %}
+                        <option value="free" {% if filters.assignment == 'free' %}selected{% endif %}>
+                            Свободные
+                        </option>
+                        {% if request.user.is_owner %}
+                            <option value="assigned" {% if filters.assignment == 'assigned' %}selected{% endif %}>
+                                Назначенные
+                            </option>
+                        {% endif %}
+                    </select>
+                </div>
+            {% endif %}
+            <div class="filters-row">
+                <label for="installation-date-from">Дата с</label>
+                <input id="installation-date-from" type="date" name="date_from" value="{{ filters.date_from }}">
+            </div>
+            <div class="filters-row">
+                <label for="installation-date-to">Дата по</label>
+                <input id="installation-date-to" type="date" name="date_to" value="{{ filters.date_to }}">
+            </div>
+            <div class="filters-actions">
+                <button class="primary" type="submit">Применить</button>
+                <a class="link" href="/requests/installations/">Сбросить</a>
+            </div>
+        </form>
+        {% if request.user.is_owner or request.user.is_manager %}
+            <button class="primary" type="button" data-modal-open="installation-modal">Новая заявка</button>
+        {% endif %}
+    </div>
     <div class="table-wrapper">
         <table class="table">
             <thead>
@@ -17,6 +87,9 @@
                 <th>Дата</th>
                 <th>Менеджер</th>
                 <th>Статус</th>
+                {% if request.user.is_installer %}
+                    <th>Действия</th>
+                {% endif %}
             </tr>
             </thead>
             <tbody>
@@ -28,14 +101,108 @@
                     <td>{{ request.scheduled_for|date:"d.m.Y H:i" }}</td>
                     <td>{{ request.manager|default:"—" }}</td>
                     <td>{{ request.status }}</td>
+                    {% if request.user.is_installer %}
+                        <td>
+                            {% if not request.installer %}
+                                <form action="/requests/installations/{{ request.id }}/claim/" method="post">
+                                    {% csrf_token %}
+                                    <button class="link" type="submit">Взять заявку</button>
+                                </form>
+                            {% else %}
+                                <span class="badge">Моя заявка</span>
+                            {% endif %}
+                        </td>
+                    {% endif %}
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="6" class="muted">Заявок пока нет.</td>
+                    <td colspan="{% if request.user.is_installer %}7{% else %}6{% endif %}" class="muted">
+                        Заявок пока нет.
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
+{% if request.user.is_owner or request.user.is_manager %}
+    <div class="modal" id="installation-modal" aria-hidden="true">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Новая заявка на установку</h2>
+                <button class="icon-button" type="button" data-modal-close aria-label="Закрыть">×</button>
+            </div>
+            <form class="modal-form" action="/requests/installations/create/" method="post">
+                {% csrf_token %}
+                <label>
+                    Клиент
+                    <input type="text" name="client_name" required>
+                </label>
+                <label>
+                    Телефон
+                    <input type="text" name="phone" required>
+                </label>
+                <label>
+                    Адрес
+                    <input type="text" name="address" required>
+                </label>
+                <label>
+                    Дата и время
+                    <input type="datetime-local" name="scheduled_for" required>
+                </label>
+                {% if request.user.is_owner %}
+                    <label>
+                        Менеджер
+                        <select name="manager">
+                            <option value="">Не назначен</option>
+                            {% for manager in managers %}
+                                <option value="{{ manager.id }}">
+                                    {{ manager.get_full_name|default:manager.username }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                {% endif %}
+                <label>
+                    Статус
+                    <input type="text" name="status" placeholder="В ожидании установки">
+                </label>
+                <div class="modal-actions">
+                    <button class="primary" type="submit">Сохранить</button>
+                    <button class="secondary" type="button" data-modal-close>Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endif %}
+
+<script>
+    document.querySelectorAll('[data-modal-open]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const modal = document.getElementById(button.dataset.modalOpen);
+            if (modal) {
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        });
+    });
+    document.querySelectorAll('[data-modal-close]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const modal = button.closest('.modal');
+            if (modal) {
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        });
+    });
+    document.querySelectorAll('.modal').forEach((modal) => {
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        });
+    });
+</script>
 {% endblock %}
